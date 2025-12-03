@@ -81,6 +81,8 @@ public class Scanner {
                     while (peek() != '\n' && !isAtEnd()) {
                         advance();
                     }
+                } else if (match('*')) {
+                    blockComment();
                 } else {
                     addToken(TokenType.SLASH);
                 }
@@ -103,6 +105,29 @@ public class Scanner {
                 } else {
                     LoxErr.error(line, "Unexpected character!");
                 }
+        }
+    }
+
+    private void blockComment() {
+        int depth = 1;
+        while (depth > 0 && !isAtEnd()) {
+            if (peek() == '\n') {
+                line++;
+                advance();
+            } else if (peek() == '/' && peekNext() == '*') {
+                advance(); // consume /
+                advance(); // consume *
+                depth++;
+            } else if (peek() == '*' && peekNext() == '/') {
+                advance(); // consume *
+                advance(); // consume /
+                depth--;
+            } else {
+                advance();
+            }
+        }
+        if (depth > 0) {
+            LoxErr.error(line, "Unfinished block comment!");
         }
     }
 
