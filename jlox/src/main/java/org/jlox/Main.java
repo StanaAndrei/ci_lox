@@ -7,28 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
-class Token {}
-class Scanner {
-    public Scanner(final String src) {}
-
-    List<Token> scanTokens() {
-        return null;
-    }
-}
-
-class ErrHandler {
-    static boolean hadErr = false;
-    public static void error(int line, final String msg) {
-        report(line, "", msg);
-    }
-
-    private static void report(int line, final String where, final String msg) {
-        System.err.println("[line " + line + "] Error" + where + ": " + msg);
-        hadErr = true;
-    }
-}
 
 public class Main {
     private static void run(final String src) {
@@ -45,7 +24,7 @@ public class Main {
         final byte[] bytes = Files.readAllBytes(path);
         final var src = new String(bytes, Charset.defaultCharset());
         run(src);
-        if (ErrHandler.hadErr) {
+        if (LoxErr.hadErr) {
             System.exit(65);
         }
     }
@@ -60,7 +39,7 @@ public class Main {
                 break;
             }
             run(line);
-            ErrHandler.hadErr = false;
+            LoxErr.hadErr = false;
          }
     }
 
