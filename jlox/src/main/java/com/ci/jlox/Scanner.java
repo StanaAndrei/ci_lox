@@ -1,4 +1,4 @@
-package org.jlox;
+package com.ci.jlox;
 
 import java.util.ArrayList;
 import java.util.HashMap;

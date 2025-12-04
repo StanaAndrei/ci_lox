@@ -1,4 +1,4 @@
-package org.jlox;
+package com.ci.jlox;
 
 
 import java.io.BufferedReader;

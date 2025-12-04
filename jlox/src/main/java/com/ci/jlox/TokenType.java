@@ -1,4 +1,4 @@
-package org.jlox;
+package com.ci.jlox;
 
 public enum TokenType {
     // Single-character tokens.
