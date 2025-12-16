@@ -1,0 +1,75 @@
+package com.ci.tool;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+public class GenerateAst {
+    private static void defineType(
+            final PrintWriter writer, final String baseName,
+            final String className, final String fieldList
+    ) {
+        writer.println("  static class " + className + " extends " + baseName + " {");
+
+        // Constructor
+        writer.println("    " + className + "(" + fieldList + ") {");
+
+        final String[] fields = fieldList.split(", ");
+        for (final var field : fields) {
+            final var name = field.split(" ")[1];
+            // FIX 1: Assign 'name', not the whole 'field' string
+            writer.println("      this." + name + " = " + name + ";");
+        }
+        writer.println("    }");
+
+        // Fields
+        writer.println();
+        for (final var field : fields) {
+            // FIX 2: Generate a field declaration, not a method stub
+            writer.println("    final " + field + ";");
+        }
+
+        writer.println("  }");
+    }
+
+    private static void defineAst(
+            final String outDir, final String baseName,
+            final List<String> types
+    ) throws IOException {
+        final String path = outDir + '/' + baseName + ".java";
+        var writer = new PrintWriter(path, StandardCharsets.UTF_8);
+
+        // FIX 3: Added semicolons and fixed 'List' capitalization
+        writer.println("package com.ci.jlox;");
+        writer.println();
+        writer.println("import java.util.List;");
+        writer.println();
+        writer.println("abstract class " + baseName + " {");
+
+        for (final var type : types) {
+            final String className = type.split(":")[0].trim();
+            final String fields = type.split(":")[1].trim();
+            defineType(writer, baseName, className, fields);
+        }
+
+        writer.println("}");
+        writer.close();
+    }
+
+    public static void main(final String[] args) throws IOException {
+        if (args.length != 1) {
+            System.err.println("Usage: generate_ast <out_dir>");
+            System.exit(64);
+        }
+        final String outDir = args[0];
+        System.out.println("Generating " + outDir + " ...");
+        defineAst(outDir, "Expr", Arrays.asList(
+                "Binary   : Expr left, Token operator, Expr right",
+                "Grouping : Expr expression",
+                "Literal  : Object value",
+                "Unary    : Token operator, Expr right"
+        ));
+    }
+}
