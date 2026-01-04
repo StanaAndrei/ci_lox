@@ -2,6 +2,9 @@ package com.ci.jlox;
 
 public class LoxErr {
     static boolean hadErr = false;
+    static boolean hadRuntimeErr = false;
+
+
     public static void error(int line, final String msg) {
         report(line, "", msg);
     }
@@ -17,5 +20,11 @@ public class LoxErr {
         } else  {
             report(token.line, " at '" + token.lexeme + "'", message);
         }
+    }
+
+    static void runtimeError(RuntimeError error) {
+        System.err.println(error.getMessage() +
+                "\n[line " + error.token.line + "]");
+        hadErr = true;
     }
 }

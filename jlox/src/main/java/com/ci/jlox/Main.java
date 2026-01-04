@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 
 
 public class Main {
+    private static final Interpreter interpreter = new Interpreter();
+
     private static void run(final String src) {
         System.out.println(src);
         final var scanner = new Scanner(src);
@@ -19,10 +21,8 @@ public class Main {
         if (LoxErr.hadErr) {
             return;
         }
-        IO.println(new AstPrinter().print(expr));
-//        for (final var token : tokens) {
-//            IO.println(token);
-//        }
+        //IO.println(new AstPrinter().print(expr));
+        interpreter.interpret(expr);
     }
 
     private static void runFile(final String filePathStr) throws IOException {
@@ -32,6 +32,9 @@ public class Main {
         run(src);
         if (LoxErr.hadErr) {
             System.exit(65);
+        }
+        if (LoxErr.hadRuntimeErr) {
+            System.exit(70);
         }
     }
 
