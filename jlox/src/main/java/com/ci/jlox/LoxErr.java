@@ -10,4 +10,12 @@ public class LoxErr {
         System.err.println("[line " + line + "] Error" + where + ": " + msg);
         hadErr = true;
     }
+
+    static void error(final Token token, final String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", message);
+        } else  {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
+    }
 }

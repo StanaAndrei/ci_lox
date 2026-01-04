@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class Token {
-    final TokenType tokenType;
+    final TokenType type;
     final String lexeme;
     final Object literal;
     final int line;
 
     @Override
     public String toString() {
-        return tokenType + " " + lexeme + " " + literal;
+        return type + " " + lexeme + " " + literal;
     }
 }

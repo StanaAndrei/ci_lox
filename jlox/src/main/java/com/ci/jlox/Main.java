@@ -14,9 +14,15 @@ public class Main {
         System.out.println(src);
         final var scanner = new Scanner(src);
         final var tokens = scanner.scanTokens();
-        for (final var token : tokens) {
-            IO.println(token);
+        final var parser = new Parser(tokens);
+        final Expr expr = parser.parse();
+        if (LoxErr.hadErr) {
+            return;
         }
+        IO.println(new AstPrinter().print(expr));
+//        for (final var token : tokens) {
+//            IO.println(token);
+//        }
     }
 
     private static void runFile(final String filePathStr) throws IOException {
