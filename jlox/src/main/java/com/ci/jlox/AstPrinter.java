@@ -7,6 +7,11 @@ public class AstPrinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return "";
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return paranthesize(expr.operator.lexeme, expr.left, expr.right);
     }

@@ -33,6 +33,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        final Object val = evaluate(expr.value);
+        environment.assign(expr.name, val);
+        return val;
+    }
+
+    @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         final Object left = evaluate(expr.left);
         final Object right = evaluate(expr.right);

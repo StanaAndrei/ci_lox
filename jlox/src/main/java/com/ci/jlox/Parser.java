@@ -62,8 +62,22 @@ public class Parser {
         return new Stmt.Expression(expr);
     }
 
+    private Expr assigment() {
+        final Expr expr = equality();
+        if (match(TokenType.EQUAL)) {
+            final Token equals = previous();
+            Expr value = assigment();
+            if (expr instanceof Expr.Variable) {
+                final Token name = ((Expr.Variable)expr).name;
+                return new Expr.Assign(name, value);
+            }
+            error(equals, "Invalid assignment target.");
+        }
+        return expr;
+    }
+
     private Expr expression() {
-        return equality();
+        return assigment();
     }
 
     private Expr equality() {

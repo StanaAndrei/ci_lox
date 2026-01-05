@@ -92,6 +92,7 @@ public class GenerateAst {
         final String outDir = args[0];
         System.out.println("Generating " + outDir + " ...");
         defineAst(outDir, "Expr", Arrays.asList(
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
