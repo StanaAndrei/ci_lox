@@ -84,7 +84,7 @@ public class GenerateAst {
         writer.close();
     }
 
-    public static void main(final String[] args) throws IOException {
+    static void main(final String[] args) throws IOException {
         if (args.length != 1) {
             System.err.println("Usage: generate_ast <out_dir>");
             System.exit(64);
@@ -96,6 +96,10 @@ public class GenerateAst {
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token operator, Expr right"
+        ));
+        defineAst(outDir, "Stmt", Arrays.asList(
+                "Expression : Expr expression",
+                "Print      : Expr expression"
         ));
     }
 }
