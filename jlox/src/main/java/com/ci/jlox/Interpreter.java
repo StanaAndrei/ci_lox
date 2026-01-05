@@ -4,6 +4,9 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
+    private Environment environment = new Environment();
+
+
     public void interpret(final List<Stmt> statements) {
         try {
             for (final var statement : statements) {
@@ -96,6 +99,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null; //unreachable
     }
 
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
+    }
+
     private boolean isTruthy(final Object object) {
         if (object instanceof Boolean) {
             return (boolean)object;
@@ -139,6 +147,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     public Object visitPrintStmt(Stmt.Print stmt) {
         final Object val = evaluate(stmt.expression);
         IO.println(stringify(val));
+        return null;
+    }
+
+    @Override
+    public Object visitVarStmt(Stmt.Var stmt) {
+        Object val = null;
+        if (stmt.initializer != null) {
+            val = evaluate(stmt.initializer);
+        }
+        environment.define(stmt.name.lexeme, val);
         return null;
     }
 }

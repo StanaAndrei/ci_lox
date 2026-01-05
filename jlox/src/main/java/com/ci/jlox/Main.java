@@ -14,7 +14,7 @@ public class Main {
     private static final Interpreter interpreter = new Interpreter();
 
     private static void run(final String src) {
-        System.out.println(src);
+        //System.out.println(src);
         final var scanner = new Scanner(src);
         final var tokens = scanner.scanTokens();
         final var parser = new Parser(tokens);
@@ -22,7 +22,6 @@ public class Main {
         if (LoxErr.hadErr) {
             return;
         }
-        //IO.println(new AstPrinter().print(expr));
         interpreter.interpret(statements);
     }
 
