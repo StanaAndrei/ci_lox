@@ -1,14 +1,21 @@
 package com.ci.jlox;
 
-public class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
 
-    public void interpret(final Expr expr) {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
+
+    public void interpret(final List<Stmt> statements) {
         try {
-            Object val = evaluate(expr);
-            System.out.println(stringify(val));
+            for (final var statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             LoxErr.runtimeError(error);
         }
+    }
+
+    private void execute(final Stmt stmt) {
+        stmt.accept(this);
     }
 
     private String stringify(final Object o) {
@@ -120,5 +127,18 @@ public class Interpreter implements Expr.Visitor<Object> {
             return;
         }
         throw new RuntimeError(operator, "Operands must be numbers.");
+    }
+
+    @Override
+    public Object visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Object visitPrintStmt(Stmt.Print stmt) {
+        final Object val = evaluate(stmt.expression);
+        IO.println(stringify(val));
+        return null;
     }
 }

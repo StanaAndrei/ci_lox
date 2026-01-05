@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 public class Main {
@@ -17,12 +18,12 @@ public class Main {
         final var scanner = new Scanner(src);
         final var tokens = scanner.scanTokens();
         final var parser = new Parser(tokens);
-        final Expr expr = parser.parse();
+        final List<Stmt> statements = parser.parse();
         if (LoxErr.hadErr) {
             return;
         }
         //IO.println(new AstPrinter().print(expr));
-        interpreter.interpret(expr);
+        interpreter.interpret(statements);
     }
 
     private static void runFile(final String filePathStr) throws IOException {
