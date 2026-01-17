@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
-    private final Environment globals = new Environment();
+    final Environment globals = new Environment();
     private Environment environment = globals;
 
     public Interpreter() {
@@ -103,7 +103,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         final Object callee = evaluate(expr.callee);
         final List<Object> args = new ArrayList<>();
         for (final Expr arg : expr.arguments) {
-            args.add(arg);
+            args.add(evaluate(arg));
         }
         if (!(callee instanceof LoxCallable func)) {
             throw new RuntimeError(expr.paren,
@@ -210,6 +210,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Object visitFunctionStmt(final Stmt.Function stmt) {
+        final var function = new LoxFunction(stmt);
+        environment.define(stmt.name.lexeme, function);
         return null;
     }
 

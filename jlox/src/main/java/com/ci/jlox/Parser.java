@@ -24,9 +24,8 @@ public class Parser {
 
     private Stmt declaration() {
         try {
-            if (match(TokenType.VAR)) {
-                return varDeclaration();
-            }
+            if (match(TokenType.FUN)) return function("function");
+            if (match(TokenType.VAR)) return varDeclaration();
             return statement();
         } catch (ParseError error) {
             synchronize();
@@ -140,6 +139,24 @@ public class Parser {
         final var expr = expression();
         consume(TokenType.SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
+    }
+
+    private Stmt.Function function(final String kind) {
+        Token name = consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
+        final List<Token> params = new ArrayList<>();
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (params.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+                params.add(consume(TokenType.IDENTIFIER, "Expect parameter name."));
+            } while (match(TokenType.COMMA));
+        }
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.");
+        consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body.");
+        final List<Stmt> block = block();
+        return new Stmt.Function(name, params, block);
     }
 
     private Expr assigment() {
