@@ -215,7 +215,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitFunctionStmt(final Stmt.Function stmt) {
-        final var function = new LoxFunction(stmt);
+        final var function = new LoxFunction(stmt, environment);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
@@ -235,6 +235,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         final Object val = evaluate(stmt.expression);
         IO.println(stringify(val));
         return null;
+    }
+
+    @Override
+    public Object visitReturnStmt(Stmt.Return stmt) {
+        Object val = null;
+        if (stmt.value != null) {
+            val = evaluate(stmt.value);
+        }
+        throw new Return(val);
     }
 
     @Override
