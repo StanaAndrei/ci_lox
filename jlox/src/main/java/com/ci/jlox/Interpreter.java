@@ -1,5 +1,6 @@
 package com.ci.jlox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
@@ -81,6 +82,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             default:
                 return null; // unreachable
         }
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr) {
+        final Object callee = evaluate(expr.callee);
+        final List<Object> args = new ArrayList<>();
+        for (final Expr arg : expr.arguments) {
+            args.add(arg);
+        }
+        if (!(callee instanceof LoxCallable func)) {
+            throw new RuntimeError(expr.paren,
+                    "Can only call functions and classes.");
+        }
+        if (args.size() != func.arity()) {
+            throw new RuntimeError(expr.paren, "Expected " +
+                    func.arity() + " arguments but got " +
+                    args.size() + ".");
+        }
+        return func.call(this, args);
     }
 
     @Override
