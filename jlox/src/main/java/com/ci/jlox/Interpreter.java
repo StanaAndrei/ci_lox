@@ -1,13 +1,17 @@
 package com.ci.jlox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     final Environment globals = new Environment();
     private Environment environment = globals;
+    private final Map<Expr, Integer> locals;
 
     public Interpreter() {
+        locals = new HashMap<>();
         globals.define("clock", new LoxCallable() {
             @Override
             public int arity() { return 0; }
@@ -20,6 +24,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             @Override
             public String toString() { return "<native fn>"; }
         });
+    }
+
+    public void resolve(final Expr expr, int depth) {
+        locals.put(expr, depth);
     }
 
     public void interpret(final List<Stmt> statements) {
@@ -49,9 +57,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
-        final Object val = evaluate(expr.value);
-        environment.assign(expr.name, val);
-        return val;
+        final Object value = evaluate(expr.value);
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value);
+        } else {
+            globals.assign(expr.name, value);
+        }
+        return value;
     }
 
     @Override
@@ -90,7 +103,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                     return (double) left + (double) right;
                 }
                 if (left instanceof String && right instanceof String) {
-                    return (String) left + (String) right;
+                    return left + (String) right;
                 }
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
             default:
@@ -141,19 +154,27 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = evaluate(expr.right);
-        switch (expr.operator.type) {
-            case MINUS:
+        return switch (expr.operator.type) {
+            case MINUS -> {
                 checkNrOperand(expr.operator, right);
-                return  -(double) right;
-            case BANG:
-                return !isTruthy(right);
+                yield -(double) right;
+            }
+            case BANG -> !isTruthy(right);
+            default -> null;
         };
-        return null; //unreachable
     }
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+        return lookUpVariable(expr.name, expr);
+    }
+
+    private Object lookUpVariable(final Token name, final Expr expr) {
+        final Integer distance = locals.get(expr);
+        if (distance != null) {
+            return environment.getAt(distance, name.lexeme);
+        }
+        return globals.get(name);
     }
 
     private boolean isTruthy(final Object object) {

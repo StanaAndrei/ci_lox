@@ -22,6 +22,11 @@ public class Main {
         if (LoxErr.hadErr) {
             return;
         }
+        final var resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+        if (LoxErr.hadErr) {
+            return;
+        }
         interpreter.interpret(statements);
     }
 
