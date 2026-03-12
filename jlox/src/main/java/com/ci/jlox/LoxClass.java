@@ -1,13 +1,14 @@
 package com.ci.jlox;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+
+@AllArgsConstructor
 public class LoxClass implements LoxCallable {
     final String name;
-
-    LoxClass(final String name) {
-        this.name = name;
-    }
+    final private Map<String, LoxFunction> methods;
 
     @Override
     public String toString() {
@@ -23,5 +24,12 @@ public class LoxClass implements LoxCallable {
     public Object call(Interpreter interpreter, List<Object> args) {
         final var instance = new LoxInstance(this);
         return instance;
+    }
+
+    LoxFunction findMethod(final String name) {
+        if (methods.containsKey(name)) {
+            return methods.get(name);
+        }
+        return null;
     }
 }
