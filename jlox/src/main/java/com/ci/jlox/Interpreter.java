@@ -216,6 +216,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    @Override
+    public Object visitClassStmt(Stmt.Class stmt) {
+        environment.define(stmt.name.lexeme, null);
+        final var klass = new LoxClass(stmt.name.lexeme);
+        environment.assign(stmt.name, klass);
+        return null;
+    }
+
     void executeBlock(final List<Stmt> statements, final Environment environment) {
         final Environment prev = this.environment;
         try {

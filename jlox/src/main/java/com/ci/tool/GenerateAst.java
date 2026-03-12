@@ -103,6 +103,7 @@ public class GenerateAst {
         ));
         defineAst(outDir, "Stmt", Arrays.asList(
                 "Block      : List<Stmt> statements",
+                "Class      : Token name, List<Stmt.Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> params," +
                         " List<Stmt> body",
